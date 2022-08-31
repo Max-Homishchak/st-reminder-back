@@ -37,7 +37,7 @@ public class VisitorServiceImpl implements VisitorService {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        helper.setFrom("maksimhomisak813@gmail.com");
+        helper.setFrom("st.reminder.bot@gmail.com");
         helper.setTo(to);
         helper.setSubject("Verification code");
         helper.setText(mailContent, true);
@@ -98,7 +98,7 @@ public class VisitorServiceImpl implements VisitorService {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        helper.setFrom("maksimhomisak813@gmail.com");
+        helper.setFrom("st.reminder.bot@gmail.com");
         helper.setTo(visitor.getEmail());
         helper.setSubject("Greeting");
         helper.setText(mailContent, true);

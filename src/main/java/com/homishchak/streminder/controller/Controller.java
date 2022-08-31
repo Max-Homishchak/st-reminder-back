@@ -37,13 +37,14 @@ public class Controller {
     public ResponseEntity<?> checkCode(@PathVariable("email") String email, @PathVariable("code") int code) throws MessagingException {
 
         if(visitorService.validateCode(code, email)){
+
+            return new ResponseEntity<>(HttpStatus.OK);
         }else{
 
-            System.out.println("Invalid Code");
             visitorService.sendVerificationCode(email);
-        }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/add")
