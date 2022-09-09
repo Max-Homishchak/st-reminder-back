@@ -50,8 +50,29 @@ public class Controller {
     @PostMapping("/add")
     public ResponseEntity<?> addVisitor(@RequestBody Visitor visitor) throws MessagingException {
 
-        visitorService.saveVisitorTasks(visitor);
+        visitorService.save(visitor);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<Visitor> updateVisitor(@RequestBody Visitor visitor) throws MessagingException{
+
+        visitorService.updateVisitor(visitor);
+
+        return new ResponseEntity<Visitor>(HttpStatus.OK);
+    }
+
+    @GetMapping("/checkEmail/{email}")
+    public ResponseEntity<Visitor> checkExistence(@PathVariable("email") String email) {
+
+        Visitor visitor = visitorService.findForChange(email);
+
+        if(visitor == null) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }else{
+            return new ResponseEntity<>(visitor, HttpStatus.OK);
+        }
+
     }
 }

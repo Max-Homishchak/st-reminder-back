@@ -24,5 +24,6 @@ public class Task {
     private String time;
 
     @ManyToOne
+    @JsonIgnore
     private Visitor visitor;
 }

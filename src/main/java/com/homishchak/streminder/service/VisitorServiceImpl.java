@@ -12,6 +12,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VisitorServiceImpl implements VisitorService {
@@ -55,9 +56,9 @@ public class VisitorServiceImpl implements VisitorService {
     @Transactional
     public boolean validateCode(int code, String email) {
 
-        Visitor user = visitorRepository.findByEmail(email);
+        Visitor user = visitorRepository.findVisitorForCodeCheck(email);
 
-        visitorRepository.deleteByEmail(email);
+        visitorRepository.deleteByEmailAndVerificationCode(email, code);
 
         if(code == user.getVerificationCode()){
             return true;
@@ -67,19 +68,38 @@ public class VisitorServiceImpl implements VisitorService {
     }
 
     @Override
-    public void saveVisitorTasks(Visitor visitor) throws MessagingException {
+    public Visitor save(Visitor visitor) throws MessagingException {
 
-        save(visitor);
+        sendFirstMessage(visitor);
+
+        visitorRepository.save(visitor);
+
+        saveVisitorTasks(visitor);
+
+        return visitor;
+    }
+
+
+    @Override
+    @Transactional
+    public Visitor updateVisitor(Visitor visitor) throws MessagingException {
+
+        visitorRepository.deleteByEmail(visitor.getEmail());
+
+        return save(visitor);
+    }
+
+    @Override
+    public Visitor findForChange(String email) {
+
+        return visitorRepository.findVisitorForChange(email);
+    }
+
+    private void saveVisitorTasks(Visitor visitor) throws MessagingException {
 
         taskService.saveAllTasks(visitor);
     }
 
-    private Visitor save(Visitor visitor) throws MessagingException {
-
-        sendFirstMessage(visitor);
-
-        return visitorRepository.save(visitor);
-    }
 
     private void sendFirstMessage(Visitor visitor) throws MessagingException {
 

@@ -25,6 +25,6 @@ public class Visitor {
 
     private Long beforeReminderTime;
 
-    @OneToMany(mappedBy = "visitor", fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "visitor", fetch = FetchType.LAZY)
     private List<Task> tasks;
 }

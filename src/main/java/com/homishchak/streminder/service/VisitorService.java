@@ -6,13 +6,18 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface VisitorService {
 
-    public void saveVisitorTasks(Visitor visitor) throws MessagingException;
+    public Visitor save(Visitor visitor) throws MessagingException ;
 
     public int sendVerificationCode(String to) throws MessagingException;
 
     public boolean validateCode(int code, String email);
+
+    Visitor updateVisitor(Visitor visitor) throws MessagingException;
+
+    Visitor findForChange(String email);
 }
