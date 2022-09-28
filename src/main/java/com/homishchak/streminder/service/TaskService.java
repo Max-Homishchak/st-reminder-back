@@ -11,4 +11,6 @@ import java.util.List;
 public interface TaskService {
 
     public void saveAllTasks(Visitor visitor);
+
+    public void notifyAllUpcomingTasks() throws MessagingException;
 }

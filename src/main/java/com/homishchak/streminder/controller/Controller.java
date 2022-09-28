@@ -73,6 +73,5 @@ public class Controller {
         }else{
             return new ResponseEntity<>(visitor, HttpStatus.OK);
         }
-
     }
 }
