@@ -23,6 +23,8 @@ import java.util.stream.Stream;
 @Service
 public class TaskServiceImpl implements TaskService{
 
+    public static final int MONITORING_UPCOMING_USERS_TASKS_PERIOD = 30000;
+
     private TaskRepository taskRepository;
     private VisitorRepository visitorRepository;
     private JavaMailSender javaMailSender;
@@ -43,7 +45,7 @@ public class TaskServiceImpl implements TaskService{
         }
     }
 
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = MONITORING_UPCOMING_USERS_TASKS_PERIOD)
     @Override
     public void notifyAllUpcomingTasks() throws MessagingException {
 
@@ -57,7 +59,8 @@ public class TaskServiceImpl implements TaskService{
 
     }
 
-    private void sendRemindingMail(Task task) throws MessagingException {
+    @Transactional
+    public void sendRemindingMail(Task task) throws MessagingException {
 
         Visitor visitor = task.getVisitor();
 
@@ -67,10 +70,14 @@ public class TaskServiceImpl implements TaskService{
             mailContent += "task: " + task.getTask() + "is planned on NOW";
             taskRepository.delete(task);
 
-        }else if(!task.isAlreadyNotified()){
+        } else{
             mailContent += visitor.getBeforeReminderTime() + " minutes is left before task: " + task.getTask();
             task.setAlreadyNotified(true);
             taskRepository.save(task);
+        }
+
+        if(taskRepository.findAllByVisitorId(visitor.getId()).isEmpty()) {
+            visitorRepository.delete(visitor);
         }
 
         MimeMessage message = javaMailSender.createMimeMessage();
@@ -93,17 +100,20 @@ public class TaskServiceImpl implements TaskService{
 
     private List<Task> findTasksBeforeReminder() {
 
-        List<Task> resultTasks = new ArrayList<>();
-
+        List<Task> tasksToBeNotified = new ArrayList<>();
         String currentTime;
 
         for(Visitor visitor: visitorRepository.findAll()) {
 
-            currentTime = new String(String.valueOf(LocalDateTime.now().plusSeconds(visitor.getBeforeReminderTime() * 60)));
+            if(visitor.getBeforeReminderTime() != null) {
+                currentTime = new String(String.valueOf(LocalDateTime.now().plusSeconds(visitor.getBeforeReminderTime() * 60)));
 
-            resultTasks.addAll(taskRepository.findByTimeLessThanEqualAndAlreadyNotifiedFalse(currentTime));
+                tasksToBeNotified.addAll(taskRepository.findByTimeLessThanEqualAndAlreadyNotifiedFalse(currentTime));
+            }
         }
 
-        return resultTasks;
+        return tasksToBeNotified;
     }
+
+
 }

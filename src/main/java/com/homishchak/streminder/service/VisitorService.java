@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public interface VisitorService {

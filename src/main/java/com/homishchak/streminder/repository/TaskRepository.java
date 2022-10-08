@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    public Visitor findByVisitorId(Long id);
+    public List<Task> findAllByVisitorId(Long id);
 
     public List<Task> findByTimeLessThanEqual(String time);
 
